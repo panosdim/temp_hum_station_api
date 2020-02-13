@@ -1,2 +1,3 @@
-# temp_hum_station_api
+# Temperature Humidity Station REST API
+
 Temperature Humidity REST API written in Go
