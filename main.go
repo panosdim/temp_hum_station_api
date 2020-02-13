@@ -11,7 +11,7 @@ import (
 
 var db *gorm.DB
 
-// Update with correct token
+// TODO: Update with correct token
 const token = ""
 
 func init() {
