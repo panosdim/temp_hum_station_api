@@ -1,29 +1,35 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/magiconair/properties"
 )
 
 var db *gorm.DB
-
-// TODO: Update with correct token
-const token = ""
+var token string
 
 func init() {
 	var err error
 	//open a db connection
 	db, err = gorm.Open("sqlite3", "sensorData.db")
 	if err != nil {
-		panic("failed to connect database")
+		panic(fmt.Errorf("failed to connect database"))
 	}
 
 	//Migrate the schema
 	db.AutoMigrate(&sensorDataModel{})
+
+	// Read token from properties file
+	properties.ErrorHandler = properties.PanicHandler
+	p := properties.MustLoadFile("app.properties", properties.UTF8)
+
+	token = p.GetString("token", "")
 }
 
 func main() {
