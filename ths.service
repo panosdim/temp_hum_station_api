@@ -1,0 +1,14 @@
+[Unit]
+Description=Script to start temp humidity station web server
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+User=root
+Environment=GIN_MODE=release
+WorkingDirectory=/opt/ths
+ExecStart=/opt/ths/ths 
+
+[Install]
+WantedBy=multi-user.target
