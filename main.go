@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -23,7 +24,7 @@ func init() {
 	}
 
 	//Migrate the schema
-	db.AutoMigrate(&sensorDataModel{})
+	db.AutoMigrate(&sensorData{})
 
 	// Read token from properties file
 	properties.ErrorHandler = properties.PanicHandler
@@ -46,9 +47,9 @@ func main() {
 	defer db.Close()
 }
 
-type sensorDataModel struct {
-	gorm.Model
-	Date        uint32  `json:"date"`
+type sensorData struct {
+	ID          uint `gorm:"primary_key"`
+	Date        int64
 	Temperature float32 `json:"temperature"`
 	Humidity    float32 `json:"humidity"`
 }
@@ -60,8 +61,7 @@ func createRecord(c *gin.Context) {
 	} else {
 		temperature, _ := strconv.ParseFloat(c.PostForm("temperature"), 2)
 		humidity, _ := strconv.ParseFloat(c.PostForm("humidity"), 2)
-		date, _ := strconv.ParseUint(c.PostForm("date"), 10, 32)
-		data := sensorDataModel{Date: uint32(date), Temperature: float32(temperature), Humidity: float32(humidity)}
+		data := sensorData{Date: time.Now().Unix(), Temperature: float32(temperature), Humidity: float32(humidity)}
 		db.Create(&data)
 		c.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "message": "Record created successfully!", "resourceId": data.ID})
 	}
@@ -69,7 +69,7 @@ func createRecord(c *gin.Context) {
 
 // fetchAll fetch all records from database
 func fetchAll(c *gin.Context) {
-	var records []sensorDataModel
+	var records []sensorData
 
 	db.Find(&records)
 
