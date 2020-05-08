@@ -13,7 +13,7 @@ import (
 )
 
 var db *gorm.DB
-var token string
+var token, port string
 
 func init() {
 	var err error
@@ -31,6 +31,7 @@ func init() {
 	p := properties.MustLoadFile("app.properties", properties.UTF8)
 
 	token = p.GetString("token", "")
+	port = p.GetString("port", ":9008")
 }
 
 func main() {
@@ -42,7 +43,7 @@ func main() {
 		v1.POST("/", createRecord)
 		v1.GET("/", fetchAll)
 	}
-	router.Run()
+	router.Run(port)
 
 	defer db.Close()
 }
